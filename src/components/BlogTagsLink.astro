@@ -1,0 +1,31 @@
+---
+import { getTagLink } from './PostTags.astro'
+import NoContents from './NoContents.astro'
+import '../styles/notion-color.css'
+
+export interface Props {
+  heading: string
+  tags: string[]
+}
+
+const { heading, tags } = Astro.props
+---
+
+<div class="blog-tags-link">
+  <h2>{heading}</h2>
+  {
+    tags.length === 0 ? (
+      <NoContents contents={tags} />
+    ) : (
+      <ul>
+        {tags.map((tag: string) => (
+          <li>
+            <a href={getTagLink(tag)} class={`tag gray`}>
+              {tag}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>

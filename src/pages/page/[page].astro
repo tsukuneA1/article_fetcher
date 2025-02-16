@@ -1,0 +1,71 @@
+---
+import BlogTagsLink from '../../components/BlogTagsLink.astro';
+import NoContents from '../../components/NoContents.astro';
+import Pagenation from '../../components/Pagenation.astro';
+import PostDate from '../../components/PostDate.astro';
+import PostExcerpt from '../../components/PostExcerpt.astro';
+import PostTags from '../../components/PostTags.astro';
+import PostTitle from '../../components/PostTitle.astro';
+import ReadMoreLink from '../../components/ReadMoreLink.astro';
+import Layout from '../../layouts/BlogTopLayout.astro';
+import type { Post } from '../../libs/interfaces';
+import { getAllTags, getNumberOfPages, getPartOfPosts, postsPerPageNumber } from '../../libs/micro';
+
+export async function getStaticPaths() {
+    const numberOfPages = await getNumberOfPages();
+
+    let params = [];
+    for (let i = 2; i <= numberOfPages; i++){
+        params.push({
+            params: { page: i.toString() },
+        });
+        
+    }
+    return params;
+}
+
+const {page} = Astro.params;
+
+const [posts, tags, numberOfPages] = await Promise.all([
+    getPartOfPosts(Number(page)),
+    getAllTags(),
+    getNumberOfPages(),
+])
+---
+
+<Layout title={`Posts ${page}/${numberOfPages}`} path={`/page/${page}`} description='' ogImage=''>
+    <div slot="main" >
+      <header>
+        <div class="page-container">{page}/{numberOfPages}</div>
+      </header>
+  
+      {
+        posts.length === 0 ? (
+          <NoContents contents={posts} />
+        ) : (
+          posts.map((post: Post) => (
+            <div class='blog-card'>
+                <div class="blog-card__contents">
+                    <PostDate post={post} />
+                    <PostTags post={post}/>
+                    <PostTitle post={post} />
+                    <PostExcerpt post={post} />
+                    <ReadMoreLink post={post} />
+                </div>
+              
+            </div>
+          ))
+        )
+      }
+  
+        <Pagenation
+          currentPage={parseInt(page, postsPerPageNumber)}
+          numberOfPages={numberOfPages}
+          tag=''
+        />
+    </div>
+  
+    <div slot="aside" >
+      <BlogTagsLink heading="タグ別" tags={tags} />
+    </div>
+  </Layout>

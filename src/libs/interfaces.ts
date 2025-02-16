@@ -8,6 +8,7 @@ export interface QiitaItemResponse {
     private: boolean;
     reactions_count: number;
     rendered_body: string;
+    body: string;
     tags: { name: string; versions: [] }[];
     title: string;
     updated_at: string;

@@ -1,0 +1,65 @@
+---
+import Layout from '../../layouts/BlogTopLayout.astro'
+
+import '../..//styles/notion-color.css'
+import '../../scss/blog.scss'
+import NoContents from '../../components/NoContents.astro'
+import PostTitle from '../../components/PostTitle.astro'
+import PostExcerpt from '../../components/PostExcerpt.astro'
+import PostTags from '../../components/PostTags.astro'
+import PostDate from '../../components/PostDate.astro'
+import ReadMoreLink from '../../components/ReadMoreLink.astro'
+import type { Post, User } from '../../libs/interfaces'
+import { getPostsByTag, getUsers, getAllTags } from '../../libs/micro'
+import BlogTagsLink from '../../components/BlogTagsLink.astro'
+
+export async function getStaticPaths() {
+  const tags = await getAllTags(); // ここは適宜動的に取得する必要あり
+  return tags.map((tag) => ({ params: { tag } }));
+}
+const { tag } = Astro.params
+
+const [posts, tags] = await Promise.all([
+  getPostsByTag(tag),
+  getAllTags(),
+]);
+---
+
+<Layout title={`${tag}タグの投稿一覧`} path={`/posts/tag/${tag}`} description='' ogImage=''>
+  <div slot="main">
+    <header>
+      <div class="tag-container">
+        <span class={`tag gray`}>{tag}</span>
+      </div>
+    </header>
+
+    {
+      posts.length === 0 ? (
+        <NoContents contents={posts} />
+      ) : (
+        posts.map((post: Post) => (
+          <div class="blog-card">
+            <div class="blog-card__contents">
+              <PostTitle post={post} />
+              <PostExcerpt post={post} />
+              <PostTags post={post}/>
+              <PostDate post={post} />
+              <ReadMoreLink post={post} />
+            </div>
+          </div>
+        ))
+      )
+    }
+
+    <!-- <Pagination tag={tag} currentPage={1} numberOfPages={numberOfPages} /> -->
+  </div>
+
+  <div slot="aside">
+    <BlogTagsLink heading="タグ別" tags={tags} />
+  </div>
+</Layout>
+<style>
+  body {
+    background-color: #edf2f7;
+  }
+</style>

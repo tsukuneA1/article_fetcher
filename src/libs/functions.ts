@@ -1,4 +1,18 @@
+import { getTagLink } from "../components/PostTags.astro";
 import type { Post, QiitaItemResponse, ZennPost } from "./interfaces";
+
+const BASE_PATH = '';
+
+export const pathJoin = (path: string, subPath: string) => {
+    return (
+      '/' +
+      path
+        .split('/')
+        .concat(subPath.split('/'))
+        .filter((p) => p)
+        .join('/')
+    )
+  }
 
 export const convertQiitaToPost = (qiitaPost: QiitaItemResponse): Post => {
     return {
@@ -7,7 +21,7 @@ export const convertQiitaToPost = (qiitaPost: QiitaItemResponse): Post => {
         Slug: qiitaPost.url,
         Date: qiitaPost.created_at,
         Tags: qiitaPost.tags.map((tag) => tag.name),
-        Excerpt: qiitaPost.rendered_body,
+        Excerpt: qiitaPost.body,
         Link: qiitaPost.url,
         ShowAuthor: false,
         Author: qiitaPost.user.name,
@@ -30,3 +44,19 @@ export const convertZennToPost = (zennPost: ZennPost): Post => {
         FeaturedImage: null,
     };
 };
+
+export const covertJSTToDate = (date: Date): string => {
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+};
+
+export const getPageLink = (page: number, tag: string) => {
+    if (page === 1) {
+      return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/')
+    }
+    return tag
+      ? pathJoin(
+          BASE_PATH,
+          `/tag/${encodeURIComponent(tag)}/page/${page.toString()}`
+        )
+      : pathJoin(BASE_PATH, `/page/${page.toString()}`)
+  }

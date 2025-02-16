@@ -1,43 +1,20 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/BlogTopLayout.astro';
-import { getUsers } from '../libs/micro';
-import type {Post, QiitaItemResponse, User, ZennPost} from '../libs/interfaces';
+import { getAllTags, getNumberOfPages, getPartOfPosts} from '../libs/micro';
 import PostTitle from '../components/PostTitle.astro';
 import PostExcerpt from '../components/PostExcerpt.astro';
 import PostTags from '../components/PostTags.astro';
 import PostDate from '../components/PostDate.astro';
 import ReadMoreLink from '../components/ReadMoreLink.astro';
 import NoContents from '../components/NoContents.astro';
-import { convertQiitaToPost, convertZennToPost } from '../libs/functions';
+import BlogTagsLink from '../components/BlogTagsLink.astro';
+import Pagenation from '../components/Pagenation.astro';
 
-const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
-
-const users:User[] = response.contents;
-const apiToken = import.meta.env.QIITA_TOKEN as string;
-
-const fetchPosts = async (user: User, token: string): Promise<Post[]> => {
-    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=100`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-	const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
-	if(qiitaResponse.ok && zennResponse.ok) {
-		const qiitaData = await qiitaResponse.json();
-		const zennData = await zennResponse.json();
-		if(!zennData.articles){
-			return [];
-		}
-		const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
-		return posts;
-	}
-    return [];
-}
-
-const posts: Post[] = ((await Promise.all(users.map((user) => fetchPosts(user, apiToken)))).flat()).sort((a, b) => {
-    return new Date(b.Date).getTime() - new Date(a.Date).getTime();
-})
+const [posts, tags, pageNumber] = await Promise.all([
+    getPartOfPosts(1),
+    getAllTags(),
+	getNumberOfPages(),
+]);
 ---
 
 <Layout title="Astro Basics" description="Astro Basics" path='' ogImage=''>
@@ -52,7 +29,7 @@ const posts: Post[] = ((await Promise.all(users.map((user) => fetchPosts(user, a
 				<div class="blog-card__contents">
 				  <PostTitle post={post} />
 				  <PostExcerpt post={post} />
-				  <PostTags post={post} />
+				  <PostTags post={post}/>
 				  <PostDate post={post} />
 				  <ReadMoreLink post={post} />
 				</div>
@@ -61,6 +38,10 @@ const posts: Post[] = ((await Promise.all(users.map((user) => fetchPosts(user, a
 		  )
 		}
 	
-		<!-- <Pagination currentPage={1} numberOfPages={numberOfPages} /> -->
+		<Pagenation currentPage={1} numberOfPages={pageNumber} tag=''/>
+	  </div>
+
+	  <div slot="aside">
+		<BlogTagsLink heading="タグ別" tags={tags} />
 	  </div>
 </Layout>
