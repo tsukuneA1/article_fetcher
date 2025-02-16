@@ -43,6 +43,15 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
         const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
         return posts;
     }
+    
+    if(!qiitaResponse.ok && zennResponse.ok) {
+        const zennData = await zennResponse.json();
+        if(!zennData.articles){
+            return [];
+        }
+        const posts = [...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+        return posts;
+    }
     return [];
 }
 

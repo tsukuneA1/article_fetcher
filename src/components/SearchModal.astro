@@ -101,8 +101,11 @@
   </style>
   
   <script>
+import type { Post } from "../libs/interfaces";
+import { getAllPosts } from "../libs/micro";
+
     document.addEventListener('DOMContentLoaded', async () => {
-      let feedItems = []
+      let feedItems: Post[] = await getAllPosts();
       let fetched = false
   
       async function openModal() {
@@ -231,7 +234,7 @@
       function search(query: string) {
         const results = []
         feedItems.forEach((item) => {
-          if (item.title.includes(query) || item?.description?.includes(query)) {
+          if (item.Title.includes(query) || item?.Excerpt?.includes(query)) {
             results.push(item)
           }
         })
