@@ -101,11 +101,9 @@
   </style>
   
   <script>
-import type { Post } from "../libs/interfaces";
-import { getAllPosts } from "../libs/micro";
 
     document.addEventListener('DOMContentLoaded', async () => {
-      let feedItems: Post[] = await getAllPosts();
+      let feedItems = [];
       let fetched = false
   
       async function openModal() {
@@ -298,6 +296,7 @@ import { getAllPosts } from "../libs/micro";
             description,
             pubDate,
           })
+          console.log(feedItems);
         })
   
         fetched = true
