@@ -1,0 +1,13 @@
+---
+import type { Post } from '../libs/interfaces.ts'
+
+export interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+---
+
+<div class="read-more-link hover__opacity">
+  <a href={post.Link}>→Read more</a>
+</div>

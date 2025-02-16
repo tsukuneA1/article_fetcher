@@ -1,0 +1,89 @@
+@charset "UTF-8";
+@use './variables' as *;
+
+.sub-page {
+  h1 {
+    font-size: 40px;
+    margin: 10px 0 20px;
+  }
+  h2 {
+    font-size: 38px;
+    margin: 10px 0 20px 20px;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      background-color: #518ef2;
+      width: 6px;
+      height: 100%;
+      left: -20px;
+    }
+  }
+  h3 {
+    font-size: 28px;
+    border-bottom: #518ef2 3px solid;
+    margin: 10px 0 20px;
+  }
+  h4 {
+    font-size: 24px;
+    margin: 10px 0 20px;
+  }
+  p {
+    margin: 0 0 10px;
+  }
+  figure {
+    margin-bottom: 20px;
+    img {
+      margin: 20px 0 0;
+    }
+    figcaption {
+      font-size: smaller;
+      color: #767676;
+      margin: 5px 0;
+    }
+  }
+  img {
+    width: 100%;
+    margin: 20px 0;
+  }
+  a {
+    color: #518ef2;
+    &:hover {
+      opacity: 0.6;
+      transition: 0.3s all;
+    }
+  }
+  hr {
+    margin: 20px 0;
+  }
+  ul,
+  ol {
+    margin: 0 0 20px 20px;
+  }
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+  @media (max-width: $breakpointMobile) {
+    h1 {
+      font-size: 20px;
+    }
+    h2 {
+      font-size: 20px;
+      margin: 10px 0 20px 10px;
+      &::before {
+        width: 3px;
+        left: -10px;
+      }
+    }
+    h3 {
+      font-size: 18px;
+      border-bottom: #518ef2 2px solid;
+    }
+    h4 {
+      font-size: 18px;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+// Breakpoints
+$breakpointMobile: 590px;
+$breakpoint-md: 767px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1230px;
+
+// コンテンツ幅
+$content-width: 1230px;
+$content-width-md: 1100px;
+$content-width-sm: 740px;
+
+// Colors
+$defaultColor: #000000d1;
+
+// Margins
+$margin: calc((100vw - ($content-width - 30px)) / 2);

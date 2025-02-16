@@ -1,0 +1,15 @@
+---
+import type { Post } from '../libs/interfaces.ts'
+
+interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+---
+
+<div class="post-excerpt">
+  <a href={post.Link} class="hover__opacity">
+    <p>{post.Excerpt ? post.Excerpt : ''}</p>
+  </a>
+</div>

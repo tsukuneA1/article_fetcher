@@ -1,0 +1,34 @@
+---
+import type { Post } from '../libs/interfaces.ts'
+import '../styles/notion-color.css'
+
+export interface Props {
+  post: Post
+  enableLink?: boolean
+}
+
+export const getTagLink = (tag: string) => {
+    return `/tags/${tag}/`
+}
+
+const { post, enableLink = true } = Astro.props
+
+const tagColor = 'gray'
+---
+
+<div class="post-tags">
+  {
+    post.Tags &&
+      post.Tags.length > 0 &&
+      post.Tags.map((tag: string) => {
+        if (enableLink) {
+          return (
+            <a href={getTagLink(tag)} class={`tag ${tagColor}`}>
+              {tag}
+            </a>
+          )
+        }
+        return <span class={`tag ${tagColor}`}>{tag}</span>
+      })
+  }
+</div>

@@ -1,28 +1,66 @@
 ---
 import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/BlogTopLayout.astro';
 import { getUsers } from '../libs/micro';
-
-
-export type User = {
-  userName: string;
-  userImgSrc: string;
-  introduction: string;
-  zennId: string;
-  qiitaId: string;
-  gitUrl: string;
-  XUrl: string;
-}
+import type {Post, QiitaItemResponse, User, ZennPost} from '../libs/interfaces';
+import PostTitle from '../components/PostTitle.astro';
+import PostExcerpt from '../components/PostExcerpt.astro';
+import PostTags from '../components/PostTags.astro';
+import PostDate from '../components/PostDate.astro';
+import ReadMoreLink from '../components/ReadMoreLink.astro';
+import NoContents from '../components/NoContents.astro';
+import { convertQiitaToPost, convertZennToPost } from '../libs/functions';
 
 const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
 
 const users:User[] = response.contents;
-console.log(users);
+const apiToken = import.meta.env.QIITA_TOKEN as string;
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const fetchPosts = async (user: User, token: string): Promise<Post[]> => {
+    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=100`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+	const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
+	if(qiitaResponse.ok && zennResponse.ok) {
+		const qiitaData = await qiitaResponse.json();
+		const zennData = await zennResponse.json();
+		if(!zennData.articles){
+			return [];
+		}
+		const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+		return posts;
+	}
+    return [];
+}
+
+const posts: Post[] = ((await Promise.all(users.map((user) => fetchPosts(user, apiToken)))).flat()).sort((a, b) => {
+    return new Date(b.Date).getTime() - new Date(a.Date).getTime();
+})
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Astro Basics" description="Astro Basics" path='' ogImage=''>
+	<div slot="main">
+		<h2 class="ttl">新着記事</h2>
+		{
+		  posts.length === 0 ? (
+			<NoContents contents={posts} />
+		  ) : (
+			posts.map((post) => (
+			  <div class="blog-card">
+				<div class="blog-card__contents">
+				  <PostTitle post={post} />
+				  <PostExcerpt post={post} />
+				  <PostTags post={post} />
+				  <PostDate post={post} />
+				  <ReadMoreLink post={post} />
+				</div>
+			  </div>
+			))
+		  )
+		}
+	
+		<!-- <Pagination currentPage={1} numberOfPages={numberOfPages} /> -->
+	  </div>
 </Layout>

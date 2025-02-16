@@ -1,0 +1,14 @@
+---
+import type { Post } from '../libs/interfaces.ts'
+
+export interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+const formattedDate = new Date(post.Date);
+---
+
+<div class="post-date">
+  {formattedDate ? formattedDate : ''}
+</div>
