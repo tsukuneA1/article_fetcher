@@ -27,33 +27,53 @@ export const getPartOfPosts = async (page: number): Promise<Post[]> => {
 }
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
-    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=100`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
+
+    try {
+        const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=10`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            signal: controller.signal // タイムアウト設定
+        });
+
+        const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`, {
+            signal: controller.signal // タイムアウト設定
+        });
+
+        clearTimeout(timeoutId); // タイマーを解除
+
+        if(qiitaResponse.ok && zennResponse.ok) {
+            const qiitaData = await qiitaResponse.json();
+            const zennData = await zennResponse.json();
+            if(!zennData.articles){
+                return [];
+            }
+            const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+            return posts;
         }
-    });
-    const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
-    
-    if(qiitaResponse.ok && zennResponse.ok) {
-        const qiitaData = await qiitaResponse.json();
-        const zennData = await zennResponse.json();
-        if(!zennData.articles){
-            return [];
+
+        if(!qiitaResponse.ok && zennResponse.ok) {
+            const zennData = await zennResponse.json();
+            if(!zennData.articles){
+                return [];
+            }
+            const posts = [...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+            return posts;
         }
-        const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
-        return posts;
+
+    } catch (error) {
+        if (error.name === "AbortError") {
+            console.error("Fetch request timed out");
+        } else {
+            console.error("Fetch failed:", error);
+        }
     }
-    
-    if(!qiitaResponse.ok && zennResponse.ok) {
-        const zennData = await zennResponse.json();
-        if(!zennData.articles){
-            return [];
-        }
-        const posts = [...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
-        return posts;
-    }
+
     return [];
-}
+};
+
 
 export const getAllPosts = async (): Promise<Post[]> => {
     const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
