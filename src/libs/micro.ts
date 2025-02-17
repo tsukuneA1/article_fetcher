@@ -77,18 +77,18 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
 
 
 export const getAllPosts = async (): Promise<Post[]> => {
-    const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
+    const response = await getUsers({ fields: ["userName", "zennId", "qiitaId"] });
+    const users: User[] = response.contents;
+    const batchSize = 5; // 一度に処理するユーザー数
+    let posts: Post[] = [];
 
-    const users:User[] = response.contents;
-
-    const posts: Post[] = ((await Promise.all(users.map((user) => fetchPostsOfUser(user)))).flat()).sort((a, b) => {
-        return new Date(b.Date).getTime() - new Date(a.Date).getTime();
-    })
-    if(posts){
-        return posts;
+    for (let i = 0; i < users.length; i += batchSize) {
+        const batchUsers = users.slice(i, i + batchSize);
+        const batchPosts = await Promise.all(batchUsers.map(user => fetchPostsOfUser(user)));
+        posts = [...posts, ...batchPosts.flat()];
     }
-    
-    return [];
+
+    return posts.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
 }
 
 export const getPostsByTag = async (tag: string): Promise<Post[]> => {
