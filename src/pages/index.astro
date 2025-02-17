@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/BlogTopLayout.astro';
-import { getAllTags, getNumberOfPages, getPartOfPosts} from '../libs/micro';
+import { getAllTags, getNumberOfPages, getPartOfPosts, getUsers} from '../libs/micro';
 import PostTitle from '../components/PostTitle.astro';
 import PostExcerpt from '../components/PostExcerpt.astro';
 import PostTags from '../components/PostTags.astro';
@@ -9,17 +9,25 @@ import ReadMoreLink from '../components/ReadMoreLink.astro';
 import NoContents from '../components/NoContents.astro';
 import BlogTagsLink from '../components/BlogTagsLink.astro';
 import Pagenation from '../components/Pagenation.astro';
+import type { User } from '../libs/interfaces';
 
 const [posts, tags, pageNumber] = await Promise.all([
     getPartOfPosts(1),
     getAllTags(),
 	getNumberOfPages(),
+	
 ]);
+
+const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
+
+const users:User[] = response.contents;
+
 ---
 
 <Layout title="Astro Basics" description="Astro Basics" path='' ogImage=''>
 	<div slot="main">
 		<h2 class="ttl">新着記事</h2>
+		{users.map((user) => <div>{user.userName}</div>)}
 		{
 		  posts.length === 0 ? (
 			<NoContents contents={posts} />

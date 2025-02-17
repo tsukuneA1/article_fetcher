@@ -14,6 +14,7 @@ export async function GET() {
       title: post.Title,
       description: post.Excerpt,
       pubDate: new Date(post.Date),
+      tags: post.Tags,
     })),
   })
 }
