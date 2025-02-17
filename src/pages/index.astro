@@ -18,14 +18,11 @@ const [posts, tags, pageNumber] = await Promise.all([
 	
 ]);
 
-const test = import.meta.env.QIITA_TOKEN as string;
-
 ---
 
 <Layout title="Astro Basics" description="Astro Basics" path='' ogImage=''>
 	<div slot="main">
 		<h2 class="ttl">新着記事</h2>
-		{test}
 		{
 		  posts.length === 0 ? (
 			<NoContents contents={posts} />

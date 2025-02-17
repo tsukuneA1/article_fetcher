@@ -28,7 +28,7 @@ export const getPartOfPosts = async (page: number): Promise<Post[]> => {
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 5秒でタイムアウト
 
     try {
         const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=1`, {
