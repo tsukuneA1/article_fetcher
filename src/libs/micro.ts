@@ -42,6 +42,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
             signal: controller.signal // タイムアウト設定
         });
 
+        console.log(qiitaResponse.status);
         clearTimeout(timeoutId); // タイマーを解除
 
         if(qiitaResponse.ok && zennResponse.ok) {
