@@ -31,7 +31,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
 
     try {
-        const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=10`, {
+        const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=1`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
