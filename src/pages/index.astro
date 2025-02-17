@@ -18,16 +18,14 @@ const [posts, tags, pageNumber] = await Promise.all([
 	
 ]);
 
-const response = await getUsers({fields: ["userName", "userImgSrc", "introduction", "zennId", "qiitaId", "gitUrl", "XUrl"]});
-
-const users:User[] = response.contents;
+const test = import.meta.env.QIITA_TOKEN as string;
 
 ---
 
 <Layout title="Astro Basics" description="Astro Basics" path='' ogImage=''>
 	<div slot="main">
 		<h2 class="ttl">新着記事</h2>
-		{users.map((user) => <div>{user.userName}</div>)}
+		{test}
 		{
 		  posts.length === 0 ? (
 			<NoContents contents={posts} />
