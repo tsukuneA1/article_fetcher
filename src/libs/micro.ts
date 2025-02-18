@@ -68,6 +68,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
 };
 
 export const getAllPosts = async (): Promise<Post[]> => {
+    console.log(`token: ${token}`);
     const response = await getUsers({ fields: ["userName", "zennId", "qiitaId"] });
     const users: User[] = response.contents;
     const batchSize = 5; // 一度に処理するユーザー数
