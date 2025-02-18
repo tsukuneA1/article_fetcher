@@ -4,6 +4,7 @@ import type { Post } from '../libs/interfaces';
 
 export async function GET() {
   const posts: Post[] = await getAllPosts();
+  console.log(`feed method called ${posts}`);
 
   return rss({
     title: 'posts',
