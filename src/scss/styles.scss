@@ -2499,3 +2499,11 @@ footer {
 }
 
 /* ------------------- footerここまで ------------------- */
+
+.search-result-description {
+      overflow: hidden;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 5;
+}

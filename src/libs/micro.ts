@@ -34,7 +34,6 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     });
     const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
     
-    console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
     if(qiitaResponse.ok && zennResponse.ok) {
         const qiitaData = await qiitaResponse.json();
         const zennData = await zennResponse.json();
@@ -42,6 +41,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
             return [];
         }
         const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+        
         return posts;
     }
     
@@ -57,7 +57,6 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
 }
 
 export const getAllPosts = async (): Promise<Post[]> => {
-    console.log(`token: ${token}`);
     const response = await getUsers({ fields: ["userName", "zennId", "qiitaId"] });
     const users: User[] = response.contents;
     const batchSize = 5; // 一度に処理するユーザー数
