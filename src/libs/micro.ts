@@ -34,6 +34,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     });
     const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
     
+    console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
     if(qiitaResponse.ok && zennResponse.ok) {
         const qiitaData = await qiitaResponse.json();
         const zennData = await zennResponse.json();
