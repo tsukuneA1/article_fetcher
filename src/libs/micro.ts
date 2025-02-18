@@ -27,7 +27,7 @@ export const getPartOfPosts = async (page: number): Promise<Post[]> => {
 }
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
-    console.log(`Fetching posts for user: ${user.qiitaId}, ${user.zennId}`); // 追加
+    console.log(`Fetching posts for user: ${user.qiitaId}, ${user.zennId}`);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
@@ -44,6 +44,8 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
             signal: controller.signal
         });
 
+        console.log("Qiita Rate Limit:", qiitaResponse.headers.get("X-RateLimit-Remaining"));
+
         const zennResponse = await fetch(zennUrl, { signal: controller.signal });
 
         console.log(`Qiita Response Status: ${qiitaResponse.status}`);
@@ -51,18 +53,11 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
 
         clearTimeout(timeoutId); // タイマー解除
 
-        if (qiitaResponse.ok && zennResponse.ok) {
-            console.log("Both API calls succeeded");
-            const qiitaData = await qiitaResponse.json();
-            const zennData = await zennResponse.json();
-            return [...qiitaData.map(convertQiitaToPost), ...zennData.articles.map(convertZennToPost)];
-        }
-
         if (!qiitaResponse.ok) {
-            console.error(`Qiita API failed: ${qiitaResponse.status}`);
+            console.error(`Qiita API failed: ${qiitaResponse.status}`, await qiitaResponse.text());
         }
         if (!zennResponse.ok) {
-            console.error(`Zenn API failed: ${zennResponse.status}`);
+            console.error(`Zenn API failed: ${zennResponse.status}`, await zennResponse.text());
         }
 
     } catch (error) {
@@ -71,8 +66,6 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
 
     return [];
 };
-
-
 
 export const getAllPosts = async (): Promise<Post[]> => {
     const response = await getUsers({ fields: ["userName", "zennId", "qiitaId"] });
