@@ -27,45 +27,34 @@ export const getPartOfPosts = async (page: number): Promise<Post[]> => {
 }
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
-    console.log(`Fetching posts for user: ${user.qiitaId}, ${user.zennId}`);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒でタイムアウト
-
-    try {
-        const qiitaUrl = `https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=1`;
-        const zennUrl = `https://zenn.dev/api/articles?username=${user.zennId}&order=latest`;
-
-        console.log(`Fetching Qiita: ${qiitaUrl}`);
-        console.log(`Fetching Zenn: ${zennUrl}`);
-
-        const qiitaResponse = await fetch(qiitaUrl, {
-            headers: { 'Authorization': `Bearer ${token}` },
-            signal: controller.signal
-        });
-
-        console.log("Qiita Rate Limit:", qiitaResponse.headers.get("X-RateLimit-Remaining"));
-
-        const zennResponse = await fetch(zennUrl, { signal: controller.signal });
-
-        console.log(`Qiita Response Status: ${qiitaResponse.status}`);
-        console.log(`Zenn Response Status: ${zennResponse.status}`);
-
-        clearTimeout(timeoutId); // タイマー解除
-
-        if (!qiitaResponse.ok) {
-            console.error(`Qiita API failed: ${qiitaResponse.status}`, await qiitaResponse.text());
+    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=1`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
-        if (!zennResponse.ok) {
-            console.error(`Zenn API failed: ${zennResponse.status}`, await zennResponse.text());
+    });
+    const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
+    
+    console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
+    if(qiitaResponse.ok && zennResponse.ok) {
+        const qiitaData = await qiitaResponse.json();
+        const zennData = await zennResponse.json();
+        if(!zennData.articles){
+            return [];
         }
-
-    } catch (error) {
-        console.error("Fetch failed:", error);
+        const posts = [...qiitaData.map((qiita: QiitaItemResponse )=> convertQiitaToPost(qiita)), ...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+        return posts;
     }
-
+    
+    if(!qiitaResponse.ok && zennResponse.ok) {
+        const zennData = await zennResponse.json();
+        if(!zennData.articles){
+            return [];
+        }
+        const posts = [...zennData.articles.map((zenn: ZennPost) => convertZennToPost(zenn))];
+        return posts;
+    }
     return [];
-};
+}
 
 export const getAllPosts = async (): Promise<Post[]> => {
     console.log(`token: ${token}`);
