@@ -240,7 +240,7 @@
       function search(query: string) {
         const results = []
         feedItems.forEach((item) => {
-          if (item.Title.includes(query) || item?.Excerpt?.includes(query)) {
+          if (item.title.includes(query) || item?.description?.includes(query)) {
             results.push(item)
           }
         })
