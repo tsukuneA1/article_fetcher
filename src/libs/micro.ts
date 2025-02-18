@@ -37,7 +37,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
     if(qiitaResponse.ok && zennResponse.ok) {
         const qiitaData = await qiitaResponse.json();
-        const zennData = await zennResponse.json();
+        const zennData = await zennResponse.json()
         if(!zennData.articles){
             return [];
         }
