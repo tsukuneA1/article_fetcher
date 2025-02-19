@@ -60,12 +60,9 @@ export interface ZennPost {
 
 export interface Post {
   Title: string;
-  Icon: FileObject | Emoji | null;
-  Slug: string;
   Date: string;
   Tags: string[];
   Excerpt: string;
-  FeaturedImage: FileObject | null;
   ShowAuthor: boolean;
   Author:string;
   Link: string;
