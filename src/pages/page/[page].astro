@@ -10,7 +10,7 @@ import ReadMoreLink from '../../components/ReadMoreLink.astro';
 import Layout from '../../layouts/BlogTopLayout.astro';
 import { getTags, retPartOfPosts } from '../../libs/functions';
 import type { Post } from '../../libs/interfaces';
-import { getNumberOfPages, postsPerPageNumber } from '../../libs/micro';
+import { getAllTags, getNumberOfPages, getPartOfPosts, postsPerPageNumber } from '../../libs/micro';
 
 export async function getStaticPaths() {
     const numberOfPages = await getNumberOfPages();
@@ -27,30 +27,30 @@ export async function getStaticPaths() {
 
 const {page} = Astro.params;
 
-// const [tags, numberOfPages] = await Promise.all([
-//     getPartOfPosts(Number(page)),
-//     getAllTags(),
-//     getNumberOfPages(),
-// ])
-const siteUrl = import.meta.env.SITE_URL as string;
+const [posts, tags, numberOfPages] = await Promise.all([
+    getPartOfPosts(Number(page)),
+    getAllTags(),
+    getNumberOfPages(),
+]) as [Post[], string[], number];
+// const siteUrl = import.meta.env.SITE_URL as string;
 
-const response = await fetch(`${siteUrl}/api/posts`);
-const textData = await response.text();
+// const response = await fetch(`${siteUrl}/api/posts`);
+// const textData = await response.text();
 
-console.log("API Response Text:", textData);
+// console.log("API Response Text:", textData);
 
-try {
-  const allPosts = JSON.parse(textData);
-  console.log("Parsed JSON Data:", allPosts);
-}catch (error) {
-  console.error("Failed to parse JSON. Response was:", textData);
-  console.log(error);
-  throw new Error("Invalid JSON received from API.");
-}
-const allPosts = await response.json();
-const posts = retPartOfPosts(allPosts, Number(page));
-const tags = getTags(allPosts);
-const numberOfPages = Math.ceil(allPosts.length/postsPerPageNumber);
+// try {
+//   const allPosts = JSON.parse(textData);
+//   console.log("Parsed JSON Data:", allPosts);
+// }catch (error) {
+//   console.error("Failed to parse JSON. Response was:", textData);
+//   console.log(error);
+//   throw new Error("Invalid JSON received from API.");
+// }
+// const allPosts = await response.json();
+// const posts = retPartOfPosts(allPosts, Number(page));
+// const tags = getTags(allPosts);
+// const numberOfPages = Math.ceil(allPosts.length/postsPerPageNumber);
 ---
 
 <Layout title={`Posts ${page}/${numberOfPages}`} path={`/page/${page}`} description='' ogImage=''>
