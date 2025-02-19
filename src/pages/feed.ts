@@ -3,7 +3,10 @@ import { getAllPosts } from '../libs/micro';
 import type { Post } from '../libs/interfaces';
 
 export async function GET() {
-  const posts: Post[] = await getAllPosts();
+  const siteUrl = import.meta.env.SITE_URL as string;
+
+const response = await fetch(`${siteUrl}/api/posts`);
+  const posts: Post[] = await response.json();
   console.log(`feed method called ${posts}`);
 
   return rss({

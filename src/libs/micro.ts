@@ -27,7 +27,7 @@ export const getPartOfPosts = async (page: number): Promise<Post[]> => {
 }
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
-    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=1`, {
+    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=10`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -36,7 +36,7 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
     
     console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
     if(qiitaResponse.ok && zennResponse.ok) {
-        const qiitaData = await qiitaResponse.json();
+        const qiitaData = await qiitaResponse.json()
         const zennData = await zennResponse.json()
         if(!zennData.articles){
             return [];

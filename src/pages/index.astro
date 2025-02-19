@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/BlogTopLayout.astro';
-import { getAllTags, getNumberOfPages, getPartOfPosts, getUsers} from '../libs/micro';
+import { getAllTags, getNumberOfPages, getPartOfPosts, getUsers, postsPerPageNumber} from '../libs/micro';
 import PostTitle from '../components/PostTitle.astro';
 import PostExcerpt from '../components/PostExcerpt.astro';
 import PostTags from '../components/PostTags.astro';
@@ -9,14 +9,27 @@ import ReadMoreLink from '../components/ReadMoreLink.astro';
 import NoContents from '../components/NoContents.astro';
 import BlogTagsLink from '../components/BlogTagsLink.astro';
 import Pagenation from '../components/Pagenation.astro';
-import type { User } from '../libs/interfaces';
+import type { Post, User } from '../libs/interfaces';
 
-const [posts, tags, pageNumber] = await Promise.all([
-    getPartOfPosts(1),
-    getAllTags(),
-	getNumberOfPages(),
-	
-]);
+// const [  pageNumber] = await Promise.all([
+//     // getPartOfPosts(1),
+//     getAllTags(),
+// 	getNumberOfPages(),	
+// ]);
+const siteUrl = import.meta.env.SITE_URL as string;
+
+const response = await fetch(`${siteUrl}/api/posts`);
+const allPosts:Post[] = await response.json();
+const posts = allPosts.slice(0, postsPerPageNumber);
+const tags = allPosts.reduce((acc: string[], post: Post) => {
+  post.Tags.forEach((tag: string) => {
+    if (!acc.includes(tag)) {
+      acc.push(tag);
+    }
+  });
+  return acc;
+}, []);
+const pageNumber = Math.ceil(allPosts.length/postsPerPageNumber);
 
 ---
 

@@ -8,6 +8,7 @@ import PostTags from '../../components/PostTags.astro';
 import PostTitle from '../../components/PostTitle.astro';
 import ReadMoreLink from '../../components/ReadMoreLink.astro';
 import Layout from '../../layouts/BlogTopLayout.astro';
+import { getTags, retPartOfPosts } from '../../libs/functions';
 import type { Post } from '../../libs/interfaces';
 import { getAllTags, getNumberOfPages, getPartOfPosts, postsPerPageNumber } from '../../libs/micro';
 
@@ -26,11 +27,18 @@ export async function getStaticPaths() {
 
 const {page} = Astro.params;
 
-const [posts, tags, numberOfPages] = await Promise.all([
-    getPartOfPosts(Number(page)),
-    getAllTags(),
-    getNumberOfPages(),
-])
+// const [tags, numberOfPages] = await Promise.all([
+//     getPartOfPosts(Number(page)),
+//     getAllTags(),
+//     getNumberOfPages(),
+// ])
+const siteUrl = import.meta.env.SITE_URL as string;
+
+const response = await fetch(`${siteUrl}/api/posts`);
+const allPosts = await response.json();
+const posts = retPartOfPosts(allPosts, Number(page));
+const tags = getTags(allPosts);
+const numberOfPages = Math.ceil(allPosts.length/postsPerPageNumber);
 ---
 
 <Layout title={`Posts ${page}/${numberOfPages}`} path={`/page/${page}`} description='' ogImage=''>
