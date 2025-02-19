@@ -1,5 +1,4 @@
 import rss from '@astrojs/rss'
-import { getAllPosts } from '../libs/micro';
 import type { Post } from '../libs/interfaces';
 
 export async function GET() {
@@ -7,7 +6,6 @@ export async function GET() {
 
 const response = await fetch(`${siteUrl}/api/posts`);
   const posts: Post[] = await response.json();
-  console.log(`feed method called ${posts}`);
 
   return rss({
     title: 'posts',
