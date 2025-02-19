@@ -44,7 +44,8 @@ try {
   console.log("Parsed JSON Data:", allPosts);
 }catch (error) {
   console.error("Failed to parse JSON. Response was:", textData);
-    throw new Error("Invalid JSON received from API.");
+  console.log(error);
+  throw new Error("Invalid JSON received from API.");
 }
 const allPosts = await response.json();
 const posts = retPartOfPosts(allPosts, Number(page));

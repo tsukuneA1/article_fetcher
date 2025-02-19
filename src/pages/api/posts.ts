@@ -59,8 +59,6 @@ export async function GET() {
           posts.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
       }
 
-    console.log(`fetced by api posts: ${JSON.stringify(posts, null, 2)}`);
-
   return new Response(JSON.stringify(posts, null, 2), {
     headers: { "Content-Type": "application/json" },
   });
