@@ -61,7 +61,5 @@ export async function GET() {
 
     console.log(`fetced by api posts: ${posts}`);
 
-  return new Response(JSON.stringify(posts), {
-    headers: { "Content-Type": "application/json" },
-  });
+  return posts;
 }
