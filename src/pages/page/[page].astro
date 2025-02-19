@@ -10,15 +10,10 @@ import ReadMoreLink from '../../components/ReadMoreLink.astro';
 import Layout from '../../layouts/BlogTopLayout.astro';
 import { getTags, retPartOfPosts } from '../../libs/functions';
 import type { Post } from '../../libs/interfaces';
-import { postsPerPageNumber } from '../../libs/micro';
+import { getNumberOfPages, postsPerPageNumber } from '../../libs/micro';
 
 export async function getStaticPaths() {
-    const siteUrl = import.meta.env.SITE_URL as string;
-
-    const response = await fetch(`${siteUrl}/api/posts`);
-    const allPosts = await response.json();
-
-    const numberOfPages = Math.ceil(allPosts.length/postsPerPageNumber);
+    const numberOfPages = await getNumberOfPages();
 
     let params = [];
     for (let i = 2; i <= numberOfPages; i++){

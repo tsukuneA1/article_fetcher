@@ -12,13 +12,10 @@ import ReadMoreLink from '../../components/ReadMoreLink.astro'
 import type { Post, User } from '../../libs/interfaces'
 import BlogTagsLink from '../../components/BlogTagsLink.astro'
 import { getTags } from '../../libs/functions'
+import { getAllTags } from '../../libs/micro'
 
 export async function getStaticPaths() {
-  const siteUrl = import.meta.env.SITE_URL as string;
-
-  const response = await fetch(`${siteUrl}/api/posts`);
-  const allPosts = await response.json();
-  const tags = getTags(allPosts);
+  const tags = await getAllTags();
   return tags.map((tag) => ({ params: { tag } }));
 }
 const { tag } = Astro.params
