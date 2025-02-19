@@ -14,19 +14,9 @@ export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
             'Authorization': `Bearer ${token}`
         }
     });
-    const qiitaText = await qiitaResponse.text(); // JSON に変換する前に "テキスト" として取得
-    console.log("Qiita Response Text:", qiitaText);
     const zennResponse = await fetch(`https://zenn.dev/api/articles?username=${user.zennId}&order=latest`);
     
     console.log(`qiitaResponse: ${qiitaResponse.status}, zennResponse: ${zennResponse.status}`);
-
-    let qiitaData = [];
-    try {
-        qiitaData = qiitaResponse.ok ? JSON.parse(qiitaText) : [];
-    } catch (error) {
-        console.error("Qiita JSON Parse Error:", error);
-    }
-
     if(qiitaResponse.ok && zennResponse.ok) {
         const qiitaData = await qiitaResponse.json()
         const zennData = await zennResponse.json()
