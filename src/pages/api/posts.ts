@@ -9,7 +9,7 @@ let lastFetchTime = 0;
 const token = import.meta.env.QIITA_TOKEN as string;
 
 export const fetchPostsOfUser = async (user: User): Promise<Post[]> => {
-    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=10`, {
+    const qiitaResponse = await fetch(`https://qiita.com/api/v2/users/${user.qiitaId}/items?per_page=5`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
