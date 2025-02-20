@@ -66,11 +66,11 @@ const [posts, tags, numberOfPages] = await Promise.all([
           posts.map((post: Post) => (
             <div class='blog-card'>
                 <div class="blog-card__contents">
-                    <PostDate post={post} />
-                    <PostTags post={post}/>
-                    <PostTitle post={post} />
-                    <PostExcerpt post={post} />
-                    <ReadMoreLink post={post} />
+                  <PostTitle post={post} />
+                  <PostExcerpt post={post} />
+                  <PostTags post={post}/>
+                  <PostDate post={post} />
+                  <ReadMoreLink post={post} />
                 </div>
               
             </div>
